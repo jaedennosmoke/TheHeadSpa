@@ -1,0 +1,573 @@
+/**
+ * The Head Spa - Shopify Product Card Styles
+ * v1.3.0
+ * 
+ * Place this file in: wp-content/themes/hello-elementor-child/shopify-styles.css
+ * Enqueue via functions.php
+ */
+
+/* ========================================
+   COLLECTION GRID LAYOUT
+   5-column grid, only first 5 visible
+   ======================================== */
+.collection-grid__grid {
+    display: grid !important;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.collection-layout {
+    width: 100%;
+}
+
+.collection-grid__grid.max-products-per-row-5 {
+    grid-template-columns: repeat(5, 1fr) !important;
+}
+
+/* ========================================
+   CAROUSEL MODE
+   JS auto-wraps grid in .ths-collection-carousel
+   and applies inline flex styles. CSS handles
+   arrows and scrollbar hiding only.
+   ======================================== */
+.ths-collection-carousel {
+    position: relative;
+    overflow: hidden;
+    padding: 0 16px;
+}
+
+/* Hide scrollbar (webkit) */
+.ths-collection-carousel .collection-grid__grid::-webkit-scrollbar {
+    display: none;
+}
+
+/* Carousel arrows */
+.ths-carousel__arrow {
+    position: absolute;
+    top: 40%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #1a1a1a;
+    border: 1px solid #e0e0e0;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 3;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    line-height: 0;
+    padding: 0;
+}
+
+.ths-carousel__arrow:hover {
+    background: #6BBAB2;
+    color: #ffffff;
+    border-color: #6BBAB2;
+}
+
+.ths-carousel__arrow--prev {
+    left: 0;
+}
+
+.ths-carousel__arrow--next {
+    right: 0;
+}
+
+.ths-carousel__arrow.ths-carousel__arrow--hidden {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+@media (max-width: 1200px) {
+    .collection-grid__grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 1024px) {
+    .collection-grid__grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+    }
+}
+
+@media (max-width: 767px) {
+    .collection-grid__grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .collection-grid__grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+}
+
+/* ========================================
+   PRODUCT CARD - MAIN CONTAINER
+   5px border radius, subtle border
+   ======================================== */
+.ths-card {
+    background: #ffffff;
+    border-radius: 5px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    transition: box-shadow 0.3s ease;
+    border: 1px solid #e8e8e8;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-sizing: border-box;
+}
+
+.ths-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* ========================================
+   IMAGE AREA
+   Inset from card edges with padding
+   ======================================== */
+.ths-card .ths-card__image-wrapper {
+    position: relative;
+    background: #ffffff;
+    overflow: hidden;
+    padding: 10px 10px 0 10px;
+}
+
+.ths-card .ths-card__image-link {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 4px;
+    background: #e9e9e9;
+}
+
+.ths-card .ths-card__image-wrapper shopify-media,
+.ths-card .ths-card__image-wrapper shopify-media img,
+.ths-card .ths-card__image-link img,
+.ths-card .ths-card__image-wrapper img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+}
+
+/* ========================================
+   WISHLIST HEART
+   Gray outline, no background
+   ======================================== */
+.ths-card .ths-card__wishlist {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 2;
+    background: none !important;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 0;
+    width: auto;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+    line-height: 0;
+}
+
+.ths-card .ths-card__wishlist svg {
+    fill: none;
+    stroke: #999999;
+    stroke-width: 1.5;
+    width: 28px;
+    height: 28px;
+    transition: all 0.2s ease;
+}
+
+.ths-card .ths-card__wishlist:hover {
+    transform: scale(1.1);
+}
+
+.ths-card .ths-card__wishlist:hover svg {
+    stroke: #e74c6f;
+}
+
+.ths-card .ths-card__wishlist.active {
+    background: none !important;
+}
+
+.ths-card .ths-card__wishlist.active svg {
+    fill: #e74c6f;
+    stroke: #e74c6f;
+}
+
+/* ========================================
+   BUY NOW OVERLAY (on hover)
+   No border radius, flat bar
+   ======================================== */
+.ths-card .ths-card__quick-shop {
+    position: absolute;
+    bottom: 0;
+    left: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.75);
+    color: #ffffff;
+    border: none;
+    border-radius: 0 !important;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(100%);
+    transition: all 0.3s ease;
+    text-align: center;
+    width: calc(100% - 20px);
+    box-sizing: border-box;
+}
+
+.ths-card:hover .ths-card__quick-shop {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ========================================
+   PRODUCT DETAILS
+   ======================================== */
+.ths-card .ths-card__details {
+    padding: 14px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    flex-grow: 1;
+}
+
+/* Title - Bold */
+.ths-card .ths-card__title,
+.ths-card h3.ths-card__title,
+h3.ths-card__title {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.3 !important;
+    letter-spacing: 0 !important;
+    min-height: calc(2em * 1.3);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.ths-card .ths-card__title a,
+.ths-card h3.ths-card__title a {
+    color: #1a1a1a !important;
+    text-decoration: none !important;
+    transition: color 0.2s ease;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+}
+
+.ths-card .ths-card__title a:hover {
+    color: #6BBAB2 !important;
+}
+
+/* Brand name */
+.ths-card .ths-card__brand {
+    font-size: 11px !important;
+    color: #999999 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.3 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600 !important;
+}
+
+.ths-card .ths-card__brand shopify-data {
+    font: inherit !important;
+    color: inherit !important;
+}
+
+/* Price */
+.ths-card .ths-card__price {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #1a1a1a !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.ths-card .ths-card__price shopify-money {
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    color: inherit !important;
+}
+
+/* ========================================
+   STAR RATING + CART ICON ROW
+   ======================================== */
+.ths-card .ths-card__action-row {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 0;
+}
+
+.ths-card .ths-card__rating {
+    margin: 0;
+    line-height: 1;
+}
+
+.ths-card .ths-card__stars {
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.ths-card .ths-card__stars-filled {
+    color: #1a1a1a;
+}
+
+.ths-card .ths-card__stars-empty {
+    color: #cccccc;
+}
+
+/* Add to Bag icon button — high specificity to override Elementor global button styles */
+/* Icon is rendered via CSS background-image so Shopify web components can't strip it */
+.ths-card .ths-card__add-bag,
+.ths-card button.ths-card__add-bag,
+#ths-collection .ths-card .ths-card__add-bag,
+#ths-search-results .ths-card .ths-card__add-bag,
+#ths-wishlist .ths-card .ths-card__add-bag,
+.ths-shopify-embed .ths-card .ths-card__add-bag,
+.elementor-kit-9 .ths-card .ths-card__add-bag,
+.elementor-kit-9 button.ths-card__add-bag {
+    background: none !important;
+    background-color: transparent !important;
+    border: 2px solid #1a1a1a !important;
+    border-radius: 50% !important;
+    width: 36px !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer;
+    color: transparent !important;
+    transition: all 0.2s ease;
+    padding: 0 !important;
+    flex-shrink: 0;
+    visibility: visible !important;
+    opacity: 1 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    min-height: 0 !important;
+    line-height: 1 !important;
+    font-size: 0px !important;
+    overflow: hidden !important;
+    position: relative !important;
+    text-indent: -9999px !important;
+}
+
+/* Bag icon via pseudo-element */
+.ths-card .ths-card__add-bag::after,
+.elementor-kit-9 .ths-card .ths-card__add-bag::after {
+    content: '' !important;
+    display: block !important;
+    width: 18px !important;
+    height: 18px !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z'/%3E%3Cline x1='3' y1='6' x2='21' y2='6'/%3E%3Cpath d='M16 10a4 4 0 01-8 0'/%3E%3C/svg%3E") !important;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    text-indent: 0 !important;
+}
+
+.ths-card .ths-card__add-bag:hover,
+.elementor-kit-9 .ths-card .ths-card__add-bag:hover {
+    background: #1a1a1a !important;
+    background-color: #1a1a1a !important;
+    border-color: #1a1a1a !important;
+}
+
+.ths-card .ths-card__add-bag:hover::after,
+.elementor-kit-9 .ths-card .ths-card__add-bag:hover::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z'/%3E%3Cline x1='3' y1='6' x2='21' y2='6'/%3E%3Cpath d='M16 10a4 4 0 01-8 0'/%3E%3C/svg%3E") !important;
+}
+
+.ths-card .ths-card__add-bag:disabled,
+.elementor-kit-9 .ths-card .ths-card__add-bag:disabled {
+    opacity: 0.4 !important;
+    cursor: not-allowed;
+}
+
+/* Hide any inline SVG the JS might inject (collection/search pages) */
+.ths-card .ths-card__add-bag svg {
+    display: none !important;
+}
+
+/* ========================================
+   SHOPIFY WEB COMPONENT RESETS
+   ======================================== */
+.ths-card shopify-data,
+.ths-card shopify-money {
+    display: inline;
+    font: inherit;
+    color: inherit;
+}
+
+/* ========================================
+   PAGE TEMPLATE
+   ======================================== */
+.shopify-page-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ========================================
+   RESPONSIVE REFINEMENTS
+   ======================================== */
+@media (max-width: 1024px) {
+    .ths-card .ths-card__btn {
+        padding: 8px 12px;
+        font-size: 11px !important;
+    }
+
+    .ths-card .ths-card__title,
+    .ths-card h3.ths-card__title,
+    h3.ths-card__title {
+        font-size: 14px !important;
+    }
+
+    .ths-card .ths-card__price {
+        font-size: 15px !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .ths-card .ths-card__btn {
+        padding: 8px 12px;
+        font-size: 11px !important;
+    }
+
+    .ths-card .ths-card__details {
+        padding: 12px;
+    }
+
+    .ths-card .ths-card__image-wrapper {
+        padding: 8px 8px 0 8px;
+    }
+}
+
+/* ========================================
+   SHOPIFY PLUGIN OVERRIDE PROTECTION
+   Prevent plugin CSS/JS from hiding our elements
+   ======================================== */
+.ths-card .ths-card__action-row {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.ths-card .ths-card__add-bag,
+.elementor-kit-9 .ths-card .ths-card__add-bag {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: transparent !important;
+    font-size: 0px !important;
+    text-indent: -9999px !important;
+}
+
+.ths-card .ths-card__add-bag:disabled,
+.elementor-kit-9 .ths-card .ths-card__add-bag:disabled {
+    opacity: 0.4 !important;
+}
+
+/* Protect wishlist button */
+.ths-card .ths-card__wishlist {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Protect rating */
+/* ========================================
+   HEADER CART ICON BADGE
+   Overlapping count bubble on Elementor icon
+   ======================================== */
+.ths-cart-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #e74c3c;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    box-sizing: border-box;
+    pointer-events: none;
+    z-index: 10;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* ── Header Account Text Hover ── */
+.account-name:hover,
+.account-name:hover * {
+    color: #6CD9D9 !important;
+    transition: color 0.2s;
+}
+
+/* ── PDP Mobile Safari Image Fix ── */
+@media (max-width: 768px) {
+    .ths-pdp__gallery-main {
+        aspect-ratio: auto;
+    }
+    .ths-pdp__gallery-main shopify-media {
+        position: relative !important;
+        width: 100% !important;
+        height: auto !important;
+        aspect-ratio: 1 / 1;
+    }
+    .ths-pdp__gallery-main shopify-media img,
+    .ths-pdp__gallery-main shopify-media unpic-img img {
+        position: relative !important;
+        width: 100% !important;
+        height: auto !important;
+        object-fit: contain !important;
+    }
+    .ths-pdp__main-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+}
