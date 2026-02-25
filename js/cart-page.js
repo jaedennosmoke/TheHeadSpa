@@ -1,6 +1,7 @@
 /**
- * The Head Spa — Custom Shopify Cart Page v2.1
+ * The Head Spa — Custom Shopify Cart Page v2.3
  * Matches THS cart mockup precisely
+ * v2.3: Auto-recovery for expired carts — rebuilds cart seamlessly on remove/qty change
  */
 (function () {
   'use strict';
@@ -34,7 +35,7 @@
           price { amount currencyCode }
         }}
         sellingPlanAllocation {
-          sellingPlan { name options { name value } }
+          sellingPlan { id name options { name value } }
           priceAdjustments {
             price { amount currencyCode }
             compareAtPrice { amount currencyCode }
@@ -48,6 +49,7 @@
   const M_REMOVE = `mutation($cartId:ID!,$lineIds:[ID!]!){cartLinesRemove(cartId:$cartId,lineIds:$lineIds){cart{${CART_FIELDS}}userErrors{field message}}}`;
   const M_DISCOUNT = `mutation($cartId:ID!,$discountCodes:[String!]!){cartDiscountCodesUpdate(cartId:$cartId,discountCodes:$discountCodes){cart{${CART_FIELDS}}userErrors{field message}}}`;
   const M_ADD = `mutation($cartId:ID!,$lines:[CartLineInput!]!){cartLinesAdd(cartId:$cartId,lines:$lines){cart{${CART_FIELDS}}userErrors{field message}}}`;
+  const M_CREATE = `mutation($lines:[CartLineInput!]!){cartCreate(input:{lines:$lines}){cart{${CART_FIELDS}}userErrors{field message}}}`;
 
   /* ─── Helpers ─── */
 
@@ -66,6 +68,38 @@
   function money(a, c = 'USD') { return new Intl.NumberFormat('en-US', { style: 'currency', currency: c }).format(parseFloat(a)); }
   function truncate(t, m = 80) { if (!t) return ''; const s = t.replace(/<[^>]*>/g, ''); return s.length <= m ? s : s.substring(0, m).trim() + '...'; }
 
+  /** Check if Shopify error means cart no longer exists */
+  function isCartGone(errors) {
+    return errors.some(e => (e.message || '').toLowerCase().includes('does not exist'));
+  }
+
+  /**
+   * Recovery: create a brand-new cart with the given lines,
+   * save its ID, re-render, and update the badge.
+   * `lines` should be an array of { merchandiseId, quantity, sellingPlanId? }
+   */
+  async function recoverCart(lines) {
+    console.log('[THS Cart] Recovering — creating new cart with', lines.length, 'items');
+    const d = await api(M_CREATE, { lines });
+    if (d.cartCreate.userErrors.length) {
+      console.error('[THS Cart] Cart recovery failed:', JSON.stringify(d.cartCreate.userErrors));
+      alert('Could not recover your cart. Please re-add your items.');
+      localStorage.removeItem(CONFIG.cartIdKey);
+      location.reload();
+      return null;
+    }
+    localStorage.setItem(CONFIG.cartIdKey, d.cartCreate.cart.id);
+    renderCart(d.cartCreate.cart);
+    badge(d.cartCreate.cart.totalQuantity);
+    return d.cartCreate.cart;
+  }
+
+  /**
+   * Collect current line items from the DOM/last-known cart
+   * so we can re-add them to a fresh cart.
+   */
+  let _lastCart = null; // cache the last successfully loaded cart
+
   /* ─── SVG Icons ─── */
 
   const ICONS = {
@@ -81,6 +115,7 @@
   /* ─── Render: Cart ─── */
 
   function renderCart(cart) {
+    _lastCart = cart; // cache for recovery
     const el = document.getElementById('ths-cart-page');
     if (!el) return;
     const lines = cart.lines.edges.map(e => e.node);
@@ -236,7 +271,7 @@
   /* ─── Render: Empty / Loading / Error ─── */
 
   function renderEmpty() {
-    return `<div class="ths2-empty"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg><h2>Your cart is empty</h2><p>Looks like you haven't added anything yet.</p><a href="/shop" class="ths2-continue">Continue Shopping</a></div>`;
+    return `<div class="ths2-empty"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg><h2>Your cart is empty</h2><p>Looks like you haven't added anything yet.</p><a href="/" class="ths2-continue">Continue Shopping</a></div>`;
   }
 
   function renderLoading() {
@@ -246,7 +281,7 @@
 
   function renderError(msg) {
     const c = document.getElementById('ths-cart-page');
-    if (c) c.innerHTML = `<div class="ths2-empty"><h2>Something went wrong</h2><p>${msg}</p><a href="/shop" class="ths2-continue">Continue Shopping</a></div>`;
+    if (c) c.innerHTML = `<div class="ths2-empty"><h2>Something went wrong</h2><p>${msg}</p><a href="/" class="ths2-continue">Continue Shopping</a></div>`;
   }
 
   /* ─── Render: Recommendations ─── */
@@ -272,9 +307,33 @@
     setLoad(id, true);
     try {
       const d = await api(M_UPDATE, { cartId: cartId(), lines: [{ id, quantity: qty }] });
-      if (d.cartLinesUpdate.userErrors.length) { alert('Could not update quantity.'); setLoad(id, false); return; }
+      if (d.cartLinesUpdate.userErrors.length) {
+        console.error('[THS Cart] Update errors:', JSON.stringify(d.cartLinesUpdate.userErrors));
+        if (isCartGone(d.cartLinesUpdate.userErrors) && _lastCart) {
+          // Cart expired — rebuild with updated quantity
+          const newLines = _lastCart.lines.edges
+            .map(e => e.node)
+            .map(l => {
+              const line = {
+                merchandiseId: l.merchandise.id,
+                quantity: l.id === id ? qty : l.quantity,
+              };
+              if (l.sellingPlanAllocation) line.sellingPlanId = l.sellingPlanAllocation.sellingPlan.id;
+              return line;
+            });
+          await recoverCart(newLines);
+          return;
+        }
+        alert('Could not update quantity: ' + d.cartLinesUpdate.userErrors.map(e => e.message).join(', '));
+        setLoad(id, false);
+        return;
+      }
       renderCart(d.cartLinesUpdate.cart); badge(d.cartLinesUpdate.cart.totalQuantity);
-    } catch (e) { console.error(e); setLoad(id, false); }
+    } catch (e) {
+      console.error('[THS Cart] Quantity update failed:', e);
+      alert('Could not update quantity. Please try refreshing the page.');
+      setLoad(id, false);
+    }
   }
 
   async function onRemove(e) { await removeById(e.currentTarget.dataset.lineId); }
@@ -283,9 +342,31 @@
     setLoad(id, true);
     try {
       const d = await api(M_REMOVE, { cartId: cartId(), lineIds: [id] });
-      if (d.cartLinesRemove.userErrors.length) { alert('Could not remove item.'); setLoad(id, false); return; }
+      if (d.cartLinesRemove.userErrors.length) {
+        console.error('[THS Cart] Remove errors:', JSON.stringify(d.cartLinesRemove.userErrors));
+        if (isCartGone(d.cartLinesRemove.userErrors) && _lastCart) {
+          // Cart expired — rebuild without the removed item
+          const keepLines = _lastCart.lines.edges
+            .map(e => e.node)
+            .filter(l => l.id !== id)
+            .map(l => {
+              const line = { merchandiseId: l.merchandise.id, quantity: l.quantity };
+              if (l.sellingPlanAllocation) line.sellingPlanId = l.sellingPlanAllocation.sellingPlan.id;
+              return line;
+            });
+          await recoverCart(keepLines);
+          return;
+        }
+        alert('Could not remove item: ' + d.cartLinesRemove.userErrors.map(e => e.message).join(', '));
+        setLoad(id, false);
+        return;
+      }
       renderCart(d.cartLinesRemove.cart); badge(d.cartLinesRemove.cart.totalQuantity);
-    } catch (e) { console.error(e); setLoad(id, false); }
+    } catch (e) {
+      console.error('[THS Cart] Remove failed:', e);
+      alert('Could not remove item. Please try refreshing the page.');
+      setLoad(id, false);
+    }
   }
 
   async function onPromo() {
