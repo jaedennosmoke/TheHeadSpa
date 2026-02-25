@@ -1,0 +1,344 @@
+/* ─── The Head Spa — Auth Pages v1.0 ─── */
+/* Shared styles for Login, Register, Reset Password, Set New Password */
+
+/* ── Container ── */
+.ths-auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 50vh;
+  padding: 40px 20px 80px;
+  font-family: 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #333;
+}
+
+/* ── Card ── */
+.ths-auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 40px 36px;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+  border: 1px solid #eee;
+}
+
+/* ── Heading ── */
+.ths-auth-heading {
+  font-family: 'Raleway', sans-serif !important;
+  font-size: 26px !important;
+  font-weight: 800 !important;
+  text-align: center;
+  margin: 0 0 6px !important;
+  color: #111 !important;
+  line-height: 1.3 !important;
+}
+
+.ths-auth-subtext {
+  text-align: center;
+  font-size: 14px;
+  color: #777;
+  margin: 0 0 28px;
+  line-height: 1.5;
+}
+
+/* ── Form Fields ── */
+.ths-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.ths-auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ths-auth-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+  letter-spacing: 0.3px;
+}
+
+.ths-auth-field input[type="text"],
+.ths-auth-field input[type="email"],
+.ths-auth-field input[type="password"] {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: 'Raleway', sans-serif;
+  color: #333;
+  background: #fafafa;
+  transition: border-color 0.2s, background 0.2s;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.ths-auth-field input:focus {
+  border-color: #439E9E;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(67, 158, 158, 0.1);
+}
+
+.ths-auth-field input::placeholder {
+  color: #aaa;
+  font-weight: 400;
+}
+
+/* ── Name Row (side by side) ── */
+.ths-auth-row {
+  display: flex;
+  gap: 12px;
+}
+.ths-auth-row .ths-auth-field {
+  flex: 1;
+}
+
+/* ── Password Field ── */
+.ths-auth-password-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ths-auth-password-wrap input {
+  padding-right: 44px;
+}
+
+.ths-auth-toggle-pw {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none !important;
+  border: none !important;
+  padding: 4px !important;
+  cursor: pointer;
+  color: #999 !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+}
+.ths-auth-toggle-pw:hover {
+  color: #555 !important;
+  background: none !important;
+}
+
+/* Elementor global button override */
+.elementor-kit-9 .ths-auth-toggle-pw,
+.elementor-kit-9 button.ths-auth-toggle-pw {
+  background: none !important;
+  background-color: transparent !important;
+  border: none !important;
+  padding: 4px !important;
+  color: #999 !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  text-transform: none !important;
+}
+
+/* ── Password Strength ── */
+.ths-auth-pw-strength {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 18px;
+}
+.ths-auth-pw-strength span {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.ths-pw-bar {
+  flex: 1;
+  height: 4px;
+  background: #eee;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.ths-pw-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s, background 0.3s;
+}
+
+/* ── Submit Button ── */
+.ths-auth-actions {
+  margin-top: 4px;
+}
+
+.ths-auth-submit,
+button.ths-auth-submit,
+.elementor-kit-9 .ths-auth-submit,
+.elementor-kit-9 button.ths-auth-submit {
+  width: 100% !important;
+  padding: 14px 24px !important;
+  background: #439E9E !important;
+  background-color: #439E9E !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  font-family: 'Raleway', sans-serif !important;
+  cursor: pointer;
+  transition: background 0.2s;
+  letter-spacing: 0.3px !important;
+  text-transform: none !important;
+  line-height: 1.4 !important;
+  box-shadow: none !important;
+  min-height: 0 !important;
+}
+
+.ths-auth-submit:hover,
+.elementor-kit-9 .ths-auth-submit:hover {
+  background: #378585 !important;
+  background-color: #378585 !important;
+}
+
+.ths-auth-submit:disabled,
+.elementor-kit-9 .ths-auth-submit:disabled {
+  opacity: 0.7 !important;
+  cursor: not-allowed;
+}
+
+/* ── Links ── */
+.ths-auth-links {
+  text-align: center;
+  margin-top: 12px;
+}
+
+.ths-auth-link {
+  font-size: 13px;
+  color: #439E9E !important;
+  text-decoration: none !important;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.ths-auth-link:hover {
+  color: #2d7a7a !important;
+  text-decoration: underline !important;
+}
+
+/* ── Divider ── */
+.ths-auth-divider {
+  text-align: center;
+  margin: 28px 0 20px;
+  position: relative;
+}
+
+.ths-auth-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #e0e0e0;
+}
+
+.ths-auth-divider span {
+  background: #fff;
+  padding: 0 16px;
+  position: relative;
+  font-size: 13px;
+  color: #999;
+  font-weight: 500;
+}
+
+/* ── Secondary Button (outline) ── */
+.ths-auth-secondary-btn,
+a.ths-auth-secondary-btn,
+.elementor-kit-9 a.ths-auth-secondary-btn {
+  display: block !important;
+  width: 100%;
+  text-align: center;
+  padding: 12px 24px !important;
+  border: 2px solid #222 !important;
+  border-radius: 8px !important;
+  color: #222 !important;
+  background: none !important;
+  background-color: transparent !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  font-family: 'Raleway', sans-serif !important;
+  text-decoration: none !important;
+  transition: all 0.2s;
+  box-sizing: border-box;
+  line-height: 1.4 !important;
+}
+
+.ths-auth-secondary-btn:hover,
+.elementor-kit-9 a.ths-auth-secondary-btn:hover {
+  background: #222 !important;
+  background-color: #222 !important;
+  color: #fff !important;
+}
+
+/* ── Error Message ── */
+.ths-auth-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #dc2626;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.ths-auth-error a {
+  color: #dc2626 !important;
+  font-weight: 600;
+  text-decoration: underline !important;
+}
+
+/* ── Success Message ── */
+.ths-auth-success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #16a34a;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .ths-auth-card {
+    padding: 28px 20px;
+    box-shadow: none;
+    border: none;
+  }
+  .ths-auth-heading {
+    font-size: 22px !important;
+  }
+  .ths-auth-row {
+    flex-direction: column;
+    gap: 18px;
+  }
+  .ths-auth-container {
+    padding: 20px 12px 60px;
+  }
+}

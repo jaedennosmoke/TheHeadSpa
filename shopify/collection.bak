@@ -1,0 +1,12 @@
+$theme_collection_template_path = get_stylesheet_directory() . '/shopify/collection.php';
+if (file_exists($theme_collection_template_path)) {
+    include $theme_collection_template_path;
+    return;  // ← STOPS HERE
+}
+```
+
+It finds that **empty 0-byte file**, includes nothing, returns, and the block outputs zero HTML. That empty file was probably created accidentally when you set up the child theme's `shopify/` folder for the product card override.
+
+**The fix:** Either delete that empty `collection.php` or rename it. Via SFTP, go to:
+```
+wp-content/themes/the-head-spa/shopify/
